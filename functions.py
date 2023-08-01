@@ -607,3 +607,107 @@ def snippy_runner(main_path, list_of_strains, output_dir):
     for strain in set_of_strains:
         input_path = main_path + strain
         os.system(f"snippy --outdir {output_dir}/{strain[:-4]}_snippy --ctgs {input_path}")
+
+
+def max_value_calculator(input_file):
+
+    max_score = 0.0
+
+    with open(input_file, "r") as infile:
+        lines = infile.readlines()
+
+    for line in lines:
+        splitted = line.split("\t")
+
+        if len(splitted) < 1:
+            continue
+        if splitted[1].strip() == "score":
+            continue
+        if splitted[1].strip() == "":
+            continue
+        else:
+            phy_score = splitted[1].strip()
+            phy_score= phy_score.replace(",", ".")
+            #print(splitted[0])
+            phy_score = float(phy_score)
+            if phy_score > max_score:
+                max_score = phy_score
+    return max_score
+
+def percentage_column_extractor(percentage, input_file):
+
+    max_value = max_value_calculator(input_file)
+
+    percentage = int(percentage)
+
+    threshold = (max_value*percentage) / 100
+
+    #print(threshold)
+
+    out_file = input_file[:-4] + "_less_than_threshold_%s" % str(percentage)
+    out_file2 = input_file[:-4] + "_more_than_threshold_%s" % str(percentage)
+
+    with open(input_file, "r") as infile:
+        lines = infile.readlines()
+
+    with open(out_file, "w") as ofile:
+        with open(out_file2, "w") as ofile2:
+            for line in lines:
+                splitted = line.split("\t")
+                if len(splitted) < 1:
+                    continue
+                if splitted[1].strip() == "score":
+                    continue
+                if splitted[1].strip() == "":
+                    continue
+                else:
+                    phy_score = splitted[1].strip()
+                    phy_score= phy_score.replace(",", ".")
+                    phy_score = float(phy_score)
+                    if phy_score < threshold:
+                        ofile.write(line.strip())
+                        ofile.write("\n")
+                    if phy_score >= threshold:
+                        ofile2.write(line.strip())
+                        ofile2.write("\n")
+
+
+def columns_dropper_order(percentage, input_file):
+
+    #input_file = "/scratch/SCRATCH_SAS/alper/Mycobacterium/non_dropped/combined_binary_mutations_non_snp_corrected_0.2_column_corrected.tsv"
+
+    df = pd.read_csv(input_file, sep="\t", dtype={"name/position": str, "outcome": int, "*": int})
+
+    mutations_to_drop = top_percent_dropper(percentage)
+
+    dropped_df = df.drop(mutations_to_drop, axis=1)
+
+    dropped_df.to_csv(f"{input_file[:-4]}_after_pyhlogeny_ordered_{percentage}.tsv", sep="\t", index=False)
+
+
+def top_percent_dropper(percent, annotation_file_ordered):
+    top_mutations = []
+    mutations_to_drop = []
+
+    #with open("./20032023_sonia_results_MUT_INFO_ORDERED.tsv") as infile:
+    with open(annotation_file_ordered) as infile:
+        lines = infile.readlines()
+
+    line_count = len(lines)-1
+
+    percent = int(percent)
+
+    limit = percent * line_count / 100
+    limit = int(limit)
+
+    i = 0
+
+    for line in lines:
+        if i >= limit:
+            splitted = line.split("\t")
+            mutations_to_drop.append(splitted[0])
+            i += 1
+        else:
+            i += 1
+
+    return mutations_to_drop

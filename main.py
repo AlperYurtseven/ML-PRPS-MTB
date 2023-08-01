@@ -1,13 +1,13 @@
 import sys
 import os
-from functions import snippy_runner_reference, binary_table_combiner, filter_percentage, seperate_antibiotic_creator, zero_col_dropper, annotation_file_creator, drop_non_snp_columns
+from functions import snippy_runner_reference, binary_table_combiner, filter_percentage, seperate_antibiotic_creator, zero_col_dropper, annotation_file_creator, drop_non_snp_columns, columns_dropper_order
 from binary_mutation_table_creator_manual import RawDataProcessor
 from ml_svm import svm_ml
 from ml_rf import rf_auto_ml
 from add_mutation_info_to_fia import add_mutation_info_to_fia
 
 
-def main(data_path, reference_path, snippy_out_path, binary_table_path, filter_percentage_value, file_extension=".fna"):
+def main(data_path, reference_path, snippy_out_path, binary_table_path, filter_percentage_value, phylogeny_percentage, file_extension=".fna"):
 
     antibiotics_list = os.listdir(data_path)
 
@@ -31,20 +31,26 @@ def main(data_path, reference_path, snippy_out_path, binary_table_path, filter_p
     
     filter_percentage(f"{binary_table_path}/combined_binary_table.tsv", filter_percentage_value, antibiotics_list, f"{binary_table_path}/combined_binary_table")
 
-    seperate_antibiotic_creator(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}.tsv")
+    drop_non_snp_columns(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}.tsv")
+
+    seperate_antibiotic_creator(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}_snp.tsv")
 
     for antibiotic in antibiotics_list:
-        drop_non_snp_columns(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}_{antibiotic}.tsv")
-        zero_col_dropper(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}_{antibiotic}_snp.tsv")
+        zero_col_dropper(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}_snp_{antibiotic}.tsv")
 
     annotation_file_creator(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}.tsv", f"{binary_table_path}/mutation_annotation_file")
     
     for antibiotic in antibiotics_list:
         svm_ml(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}_{antibiotic}_snp_dropped_zero_cols.tsv.tsv")
         rf_auto_ml(f"{binary_table_path}/combined_binary_table_{filter_percentage_value}_{antibiotic}_snp_dropped_zero_cols.tsv.tsv")
-        
+    
+    #TODO PRPS score calculation
 
+    columns_dropper_order(phylogeny_percentage)
+
+    seperate_antibiotic_creator(
+        "/scratch/SCRATCH_SAS/alper/Mycobacterium/non_dropped/combined_binary_mutations_non_snp_corrected_0.2_column_corrected_after_pyhlogeny_ordered_%s.tsv" % percentage)
 
 
 if __name__ == "__main__":
-    main("./data/", "./reference.gbff", "./snippy_outputs", "./binary_tables", 0.2)
+    main("./data/", "./reference.gbff", "./snippy_outputs", "./binary_tables", 0.2, 30)

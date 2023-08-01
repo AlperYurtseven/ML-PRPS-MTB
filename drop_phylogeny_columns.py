@@ -6,7 +6,7 @@ input_file = "/scratch/SCRATCH_SAS/alper/Mycobacterium/non_dropped/combined_bina
 df = pd.read_csv(input_file, sep="\t", dtype={"name/position": str, "outcome": int, "*": int})
 
 mutations_to_drop = []
-with open("./sonia_results_less_than_threshold_35") as infile:
+with open("./sonia_results_less_than_threshold_30") as infile:
     lines = infile.readlines()
 
     for line in lines:
@@ -16,4 +16,4 @@ with open("./sonia_results_less_than_threshold_35") as infile:
 
 dropped_df = df.drop(mutations_to_drop, axis=1)
 
-dropped_df.to_csv(input_file[:-4] + "_after_pyhlogeny_35.tsv", sep="\t", index=False)
+dropped_df.to_csv(input_file[:-4] + "_after_pyhlogeny_30.tsv", sep="\t", index=False)
