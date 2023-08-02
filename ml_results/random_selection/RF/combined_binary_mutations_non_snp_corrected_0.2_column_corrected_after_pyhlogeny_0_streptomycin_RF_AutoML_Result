@@ -1,0 +1,24 @@
+{151: {'model_id': 151, 'rank': 1, 'cost': 0.35056077074448067, 'ensemble_weight': 1.0, 'data_preprocessor': <autosklearn.pipeline.components.data_preprocessing.DataPreprocessorChoice object at 0x7fb48cd2a970>, 'balancing': Balancing(random_state=1), 'feature_preprocessor': <autosklearn.pipeline.components.feature_preprocessing.FeaturePreprocessorChoice object at 0x7fb48e251070>, 'classifier': <autosklearn.pipeline.components.classification.ClassifierChoice object at 0x7fb48e2518e0>, 'sklearn_classifier': RandomForestClassifier(bootstrap=False, max_features=2, min_samples_split=8,
+                       n_estimators=512, n_jobs=1, random_state=1,
+                       warm_start=True)}}
+Accuracy score: 0.8807570977917981
+Balanced Accuracy score: 0.7845230423937963
+Brier score loss: 0.1192429022082019
+F1 score macro: 0.8156365375253638
+F1 score micro: 0.8807570977917981
+F1 score weighted: 0.8729453957640835
+F1 score binary: 0.7060653188180406
+Precision score: 0.8566037735849057
+Recall score: 0.6005291005291006
+Confussion matrix: [[1169   38]
+ [ 151  227]]
+ROC Curve: (array([0.        , 0.03148302, 1.        ]), array([0.       , 0.6005291, 1.       ]), array([2, 1, 0]))
+ROC AUC Score: 0.7845230423937963
+Jaccard score: 0.5456730769230769
+Hinge loss: 0.8807570977917981
+Hamming loss: 0.1192429022082019
+Fbeta score macro: 0.8451617582013283
+Fbeta score micro: 0.8807570977917981
+Fbeta score weighted: 0.8743839175601116
+Log loss: 4.118523106208497
+Matthews correlation coefficient: 0.649885836310669

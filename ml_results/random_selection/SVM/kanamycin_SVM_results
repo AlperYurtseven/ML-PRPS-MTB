@@ -1,0 +1,23 @@
+C: 1
+Accuracy score: 0.7955555555555556
+Balanced Accuracy score: 0.7181149892421708
+Brier score loss: 0.20444444444444446
+F1 score macro: 0.7063746489262107
+F1 score micro: 0.7955555555555557
+F1 score weighted: 0.8005899615749541
+F1 score binary: 0.5445544554455446
+F1 score: 0.5445544554455446
+Precision score: 0.5092592592592593
+Recall score: 0.5851063829787234
+Confussion matrix: [[303  53]
+ [ 39  55]]
+ROC Curve: (array([0.       , 0.1488764, 1.       ]), array([0.        , 0.58510638, 1.        ]), array([2, 1, 0]))
+ROC AUC Score: 0.7181149892421708
+Jaccard score: 0.3741496598639456
+Hinge loss: 0.9955555555555555
+Hamming loss: 0.20444444444444446
+Fbeta score macro: 0.7007919949185288
+Fbeta score micro: 0.7955555555555556
+Fbeta score weighted: 0.8044149201560121
+Log loss: 7.061355126656851
+Matthews correlation coefficient: 0.4152211842468648

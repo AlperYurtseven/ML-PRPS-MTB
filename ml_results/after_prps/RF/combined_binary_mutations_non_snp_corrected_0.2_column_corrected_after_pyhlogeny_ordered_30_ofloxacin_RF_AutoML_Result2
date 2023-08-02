@@ -1,0 +1,24 @@
+{235: {'model_id': 235, 'rank': 1, 'cost': 0.19795376362209494, 'ensemble_weight': 1.0, 'data_preprocessor': <autosklearn.pipeline.components.data_preprocessing.DataPreprocessorChoice object at 0x7f1193069d00>, 'balancing': Balancing(random_state=1, strategy='weighting'), 'feature_preprocessor': <autosklearn.pipeline.components.feature_preprocessing.FeaturePreprocessorChoice object at 0x7f1192f93be0>, 'classifier': <autosklearn.pipeline.components.classification.ClassifierChoice object at 0x7f1190a46970>, 'sklearn_classifier': RandomForestClassifier(max_features=353, min_samples_leaf=18,
+                       min_samples_split=3, n_estimators=512, n_jobs=1,
+                       random_state=1, warm_start=True)}}
+Accuracy score: 0.8973384030418251
+Balanced Accuracy score: 0.8704466067864272
+Brier score loss: 0.10266159695817491
+F1 score macro: 0.8843956043956044
+F1 score micro: 0.8973384030418251
+F1 score weighted: 0.894838089666987
+F1 score binary: 0.8457142857142858
+Precision score: 0.9367088607594937
+Recall score: 0.7708333333333334
+Confussion matrix: [[162   5]
+ [ 22  74]]
+ROC Curve: (array([0.        , 0.02994012, 1.        ]), array([0.        , 0.77083333, 1.        ]), array([2, 1, 0]))
+ROC AUC Score: 0.8704466067864272
+Jaccard score: 0.7326732673267327
+Hinge loss: 0.7376425855513308
+Hamming loss: 0.10266159695817491
+Fbeta score macro: 0.8975341096022965
+Fbeta score micro: 0.8973384030418251
+Fbeta score weighted: 0.8973926109689617
+Log loss: 3.5458211431549036
+Matthews correlation coefficient: 0.7780849438754667
