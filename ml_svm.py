@@ -57,7 +57,7 @@ def svm_ml(file1):
 
     outfile = file1[:-4]+"_SVM_" + str(bm_c)
 
-    idx = (-best_model.coef_[0]).argsort()[:20]
+    idx = (-best_model.coef_[0]).argsort()[:10]
 
     y_hat = best_model.predict(X_test)
 

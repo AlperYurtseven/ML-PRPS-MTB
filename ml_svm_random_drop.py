@@ -1,44 +1,43 @@
 import pandas as pd
-import sklearn
-from sklearn.metrics import classification_report
-from sklearn.svm import SVC
+from datetime import datetime
+import matplotlib.pyplot as plt
 import numpy as np
+from collections import Counter
+import scipy
+import sklearn
+import sys
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import metrics
+from sklearn.model_selection import GridSearchCV
+import pickle
+
+# test classification dataset
+from sklearn.datasets import make_classification
 
 
-def add_snippy_info_to_fia(fia_file):
-    outfile = fia_file + "_MUT_INFO"
-
-    with open(fia_file, "r") as infile:
-        fia_lines = infile.readlines()
-
-    with open("./20032023_sonia_results_MUT_INFO.tsv") as snippy_info:
-        snippy_info_lines = snippy_info.readlines()
-
-    with open(outfile, "w") as ofile:
-        ofile.write(snippy_info_lines[0])
-        for line in fia_lines:
-            splitted = line.split("\t")
-            mutation = splitted[0].strip()
-            for line2 in snippy_info_lines:
-                splitted2 = line2.split("\t")
-                mutation2 = splitted2[0].strip()
-                if mutation == mutation2:
-                    ofile.write(line2)
-
-
-def svm_ml(file1, abiotic):
+def svm_ml_random_drop(file1, random_size):
     df = pd.read_csv(file1, sep="\t", dtype={"name/position": str, "outcome": int, "*": int})
-
-    print(df.shape)
 
     array = df.to_numpy()
     max_len = array.shape[1] - 1
 
     mutation_columns = df.columns[1:-1]
 
-    seventy_percent = len(mutation_columns) * 7 / 10
+    drop_percent = len(mutation_columns) * (10-random_size) / 10
 
-    mutations_selected_random = np.random.choice(mutation_columns, int(seventy_percent), replace=False)
+    mutations_selected_random = np.random.choice(mutation_columns, int(drop_percent), replace=False)
 
     mutations_to_drop = mutations_selected_random.tolist()
 
@@ -55,34 +54,35 @@ def svm_ml(file1, abiotic):
     best_model_mcc = -1.0
     bm_c = 0
 
-    print(df.shape)
 
-    for c_val in range(1,2):
+    for c_val in np.arange(1, 10, 1):
+        
         svm_cls = SVC(class_weight={0: sum(y_train), 1: len(y_train) - sum(y_train)}, kernel="linear", C=c_val)
         svm_cls.fit(X_train, y_train)
 
         y_hat = svm_cls.predict(X_test)
 
         cur_mcc_val = sklearn.metrics.matthews_corrcoef(y_test, y_hat)
-        #print(c_val)
+        #print("%.2f" % c_val + "\t" + str(cur_mcc_val) + "\t" + str(best_model_mcc))
         if cur_mcc_val > best_model_mcc:
             best_model_mcc = cur_mcc_val
             best_model = svm_cls
             bm_c = c_val
 
-    outfile = "./randomsvm/" + abiotic + "_SVM"
+    outfile = file1[:-4]+"_SVM_Random_Drop_" + str(bm_c)
 
-    idx = (-best_model.coef_[0]).argsort()[:20]
+    idx = (-best_model.coef_[0]).argsort()[:10]
 
     y_hat = best_model.predict(X_test)
 
-    with open(outfile + "_FIA_TOP20", "w") as fiafile:
+    filename = f"{outfile}_model.sav"
+    pickle.dump(best_model, open(filename, 'wb'))
+
+    with open(outfile + "_FIA", "w") as fiafile:
         for i in idx:
             fiafile.write(df.columns[int(repr(i))] + "\n")
 
-    add_snippy_info_to_fia(outfile + "_FIA_TOP20")
-
-    with open(outfile + "_results", "w") as ofile:
+    with open(outfile, "w") as ofile:
         ofile.write("C: " + str(bm_c))
         ofile.write("\n")
         ofile.write("Accuracy score: " + str(sklearn.metrics.accuracy_score(y_test, y_hat)))
@@ -129,13 +129,3 @@ def svm_ml(file1, abiotic):
         ofile.write("Log loss: " + str(sklearn.metrics.log_loss(y_test, y_hat)))
         ofile.write("\n")
         ofile.write("Matthews correlation coefficient: " + str(sklearn.metrics.matthews_corrcoef(y_test, y_hat)))
-
-
-if __name__ == "__main__":
-
-    #antibiotics = ["amikacin", "capreomycin", "ethionamide", "kanamycin", "ofloxacin", "streptomycin"]
-    antibiotics = ["kanamycin"]
-    for abiotic in antibiotics:
-        svm_ml(
-            "/scratch/SCRATCH_SAS/alper/Mycobacterium/non_dropped/combined_binary_mutations_non_snp_corrected_0.2_%s_name_corrected_no_duplicates_dropped_zero_cols.tsv" % abiotic, abiotic)
-
